@@ -1,8 +1,8 @@
 {
   "name": "esbuild-plugin-folder-import",
   "displayName": "Esbuild Plugin Folder Import",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "An esbuild plugin that imports all files in a folder from a wildcard path with an explicit extension.",
   "type": "commonjs",
   "types": "dist/index.d.ts",
   "homepage": "https://github.com/lillithrosepup/esbuild-plugin-folder-import",
