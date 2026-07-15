@@ -1,0 +1,43 @@
+{
+  "name": "esbuild-plugin-folder-import",
+  "displayName": "Esbuild Plugin Folder Import",
+  "version": "1.0.0",
+  "description": "",
+  "type": "commonjs",
+  "types": "dist/index.d.ts",
+  "homepage": "https://github.com/lillithrosepup/esbuild-plugin-folder-import",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lillithrosepup/esbuild-plugin-folder-import.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lillithrosepup/esbuild-plugin-folder-import/issues"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup"
+  },
+  "keywords": [
+    "esbuild-plugin"
+  ],
+  "author": "",
+  "peerDependencies": {
+    "esbuild": "0.28.1"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.1",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}

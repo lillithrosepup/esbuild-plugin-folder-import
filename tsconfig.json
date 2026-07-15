@@ -1,0 +1,29 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"lib": [
+			"esnext",
+			"dom",
+			"dom.iterable"
+		],
+		"module": "esnext",
+		"rootDir": "./",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"types": [
+			"node"
+		],
+		"strict": true,
+		"noImplicitAny": true,
+		"noUncheckedIndexedAccess": true,
+		"declaration": true,
+		"outDir": "./dist",
+		"stripInternal": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+	},
+	"include": [
+		"./src/**/*"
+	]
+}
