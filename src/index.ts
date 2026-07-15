@@ -1,4 +1,4 @@
-import { readdir } from "node:fs/promises";
+import { readdir, access } from "node:fs/promises";
 import { extname, join } from "node:path";
 import type { Plugin } from "esbuild";
 
@@ -9,7 +9,17 @@ export type FolderExport<T> = {
 };
 
 interface FolderImportPluginConfig {
+  /**
+   * List of file extensions to scan.
+   * Defaults to ["ts", "js"].
+   */
   allowedExtensions: string[];
+  /**
+   * When enabled, directories are checked for an `index` file with the matching
+   * wildcard extension and included as a folder import.
+   * Defaults off.
+   */
+  allowFolders: boolean;
 }
 
 const FolderImportPlugin = (
@@ -17,6 +27,7 @@ const FolderImportPlugin = (
 ): Plugin => {
   const defaultConfig: FolderImportPluginConfig = {
     allowedExtensions: ["ts", "js"],
+    allowFolders: false,
   };
 
   const usedConfig = Object.assign(defaultConfig, config);
@@ -66,34 +77,60 @@ const FolderImportPlugin = (
             extension: string;
           };
           const targetFolder = join(pluginData.resolveDir, args.path);
-          const files = await readdir(targetFolder)
-            .then((entries) =>
-              entries.filter(
-                (file) =>
-                  extname(file).slice(1).toLowerCase() === pluginData.extension,
-              ),
-            )
-            .then((entries) => entries.sort());
+          const dirEntries = await readdir(targetFolder, {
+            withFileTypes: true,
+          });
+          const files: Array<{ importPath: string; filename: string }> = [];
+          const allowFolders = Boolean(usedConfig.allowFolders);
+
+          for (const entry of dirEntries) {
+            if (entry.isFile()) {
+              if (
+                extname(entry.name).slice(1).toLowerCase() ===
+                pluginData.extension
+              ) {
+                files.push({ importPath: entry.name, filename: entry.name });
+              }
+            } else if (allowFolders && entry.isDirectory()) {
+              const indexFile = `index.${pluginData.extension}`;
+              try {
+                await access(join(targetFolder, entry.name, indexFile));
+                files.push({
+                  importPath: `${entry.name}/${indexFile}`,
+                  filename: entry.name,
+                });
+              } catch {
+                // Ignore directories without a matching index file.
+              }
+            }
+          }
+
+          const sortedFiles = files.sort((a, b) =>
+            a.filename.localeCompare(b.filename, undefined, {
+              sensitivity: "base",
+            }),
+          );
 
           const importerCode = `
-        ${files
+        ${sortedFiles
           .map(
-            (module, index) => `import * as module${index} from './${module}'`,
+            (file, index) =>
+              `import * as module${index} from './${file.importPath}'`,
           )
           .join(";")}
 
-        export const modules = [${files
-          .map((module, index) => `module${index}`)
+        export const modules = [${sortedFiles
+          .map((file, index) => `module${index}`)
           .join(",")}];
         
         export const namedModules = {
-          ${files
-            .map((module, index) => `'${module}': module${index}`)
+          ${sortedFiles
+            .map((file, index) => `'${file.filename}': module${index}`)
             .join(",\n          ")}
         };
 
-        export const filenames = [${files
-          .map((module, index) => `'${module}'`)
+        export const filenames = [${sortedFiles
+          .map((file) => `'${file.filename}'`)
           .join(",")}];
       `;
 

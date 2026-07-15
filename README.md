@@ -57,6 +57,7 @@ This will load every file in `./hi` with the `.ts` extension.
 ```ts
 interface FolderImportPluginConfig {
   allowedExtensions: string[];
+  allowFolders: boolean;
 }
 ```
 
@@ -65,6 +66,12 @@ interface FolderImportPluginConfig {
 - Default: `["ts", "js"]`
 - Accepts extension strings with or without a leading dot
 - Restricts which file types are included when resolving the wildcard import
+
+### `allowFolders`
+
+- Default: `false`
+- When enabled, directories inside the target folder are checked for an `index` file with the matching extension
+- If a directory contains `index.<ext>`, it is included as an import and its directory name is used as the key in `namedModules`
 
 ## Generated exports
 

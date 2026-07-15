@@ -9,6 +9,7 @@ async function buildExample() {
     plugins: [
       FolderImportPlugin({
         allowedExtensions: [".ts"], // defaults to [".ts", ".js"]
+        allowFolders: true,
       }),
     ],
     absWorkingDir: process.cwd(),
